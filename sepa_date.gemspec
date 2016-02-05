@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
     'http://rubygems.org/gems/sepa_date'
   s.license       = 'MIT'
 
+  s.add_runtime_dependency "holiday"
+  s.add_runtime_dependency "business_time"
   s.add_development_dependency "rake"
   s.add_development_dependency "minitest"
 end
