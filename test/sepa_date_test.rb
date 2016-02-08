@@ -47,4 +47,25 @@ class SepaDateTest < MiniTest::Unit::TestCase
   def test_adjust_bank_holiday_ecb_holiday_end_of_month
     assert_equal DateTime.new(2015, 4, 2), SepaDate.adjust_bank_holiday(@ecb_day, true)
   end
+
+  #
+  # is_sepa_date?/1
+  #
+  def test_is_sepa_date_with_sepa_date
+    assert SepaDate.is_sepa_date?(@monday)
+  end
+
+  def test_is_sepa_date_with_sepa_date
+    assert !SepaDate.is_sepa_date?(@paddys_day)
+  end
+
+  #
+  # holidays_for_year/1
+  #
+  def test_holidays_for_year
+    expected_holidays = ["2015-12-25", "2015-12-28", "2015-01-01", "2015-04-03", "2015-04-06", "2015-05-01", "2015-01-01", "2015-03-17", "2015-04-03", "2015-04-06", "2015-05-04", "2015-05-01", "2015-08-03", "2015-10-26", "2015-12-25", "2015-12-28", "2015-12-29"]
+    holidays = SepaDate.holidays_for_year 2015
+
+    assert_equal expected_holidays, holidays
+  end
 end

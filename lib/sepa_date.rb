@@ -4,7 +4,52 @@ module SepaDate
   extend Configure
 
   #
-  # == adjustion on bank holidays
+  # == Get SEPA date from an expected date when the payment is due
+  #
+  # Check if the date is a SEPA date, if it is not, adjust accordingly
+  #
+  # === Attributes
+  #
+  #  +expected_due_date+
+  #  +verbose+ - boolean whether we should return extra information about the date adjustments, if any occurred
+  #
+  def self.verify_due_date expected_due_date, verbose = false
+  end
+
+
+  #
+  # == Check if date is a day when SEPA payments can be processed
+  #
+  # Check if it is a weekday and it is not on the ECB and local holiday list
+  #
+  # === Attributes
+  #
+  # +date+
+  #
+  def self.is_sepa_date? date
+    date.weekday? && !SepaDate.holidays_for_year(date.year).include?(date.strftime('%Y-%m-%d'))
+  end
+
+  #
+  # == Return the holidays registered for passed in year
+  #
+  # === Attributes
+  #
+  # +year+
+  #
+  def self.holidays_for_year year
+    bank_holidays = SepaDate.holidays_configuration
+
+    holidays = bank_holidays[SepaDate.ecb_code][year]
+    if SepaDate.country_code
+      holidays += bank_holidays[SepaDate.country_code][year]
+    end
+
+    return holidays
+  end
+
+  #
+  # == Adjust bank holidays
   #
   # If a date falls on a bank holiday, let it be an ECB day, or a national holiday,
   # we automatically adjust it to the next available working day
@@ -15,15 +60,10 @@ module SepaDate
   # +end_of_month+ - Boolean on whether we need to adjust the date to the end of the month
   #
   def self.adjust_bank_holiday(date, end_of_month=false)
-    bank_holidays = SepaDate.holidays_configuration
-
-    holidays = bank_holidays[SepaDate.ecb_code][date.year]
-    if SepaDate.country_code
-      holidays += bank_holidays[SepaDate.country_code][date.year]
-    end
+    holidays = SepaDate.holidays_for_year(date.year)
     date_string = date.strftime('%Y-%m-%d')
 
-    if holidays.include?(date_string)
+    if !SepaDate.is_sepa_date?(date)
       if end_of_month
         while holidays.include?(date_string)
           date = 1.business_day.before(date)
@@ -41,7 +81,7 @@ module SepaDate
   end
 
   #
-  # == adjustion on weekend days
+  # == Adjust weekend days
   #
   # If a date falls on a weekend,
   # we automatically adjust it to the next available working day
