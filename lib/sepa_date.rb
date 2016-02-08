@@ -10,17 +10,59 @@ module SepaDate
   #
   # === Attributes
   #
-  #  +expected_due_date+
-  #  +verbose+ - boolean whether we should return extra information about the date adjustments, if any occurred
+  # +expected_due_date+
+  # +end_of_month+ - Boolean on whether we need to adjust the date to the end of the month
+  # +verbose+ - boolean whether we should return extra information about the date adjustments, if any occurred
   #
-  def self.verify_due_date expected_due_date, verbose = false
+  def self.verify_due_date expected_due_date, end_of_month = false, verbose = false
+    bank_holidays = SepaDate.ecb_holidays_for_year(expected_due_date.year)
+    national_holidays = SepaDate.national_holidays_for_year(expected_due_date.year)
+
+    # Adjust for end-of-month
+    expected_due_date = expected_due_date.end_of_month if end_of_month
+
+    # If it lands on a weekend, or bank holiday, then move to the next business day
+    if !expected_due_date.weekday?
+      expected_due_date = self.adjust_weekend(expected_due_date, end_of_month)
+
+      message = "The selected payment date falls on a weekend. We will automatically adjust this to the next available banking day, #{expected_due_date.strftime(SepaDate.date_format)}."
+    end
+
+    if bank_holidays.include?(expected_due_date.to_s)
+      expected_due_date = self.adjust_bank_holiday(expected_due_date, end_of_month)
+
+      message = "The selected payment date falls on a SEPA non-payment day. We will automatically adjust this to the next available banking day, #{expected_due_date.strftime('%d/%m/%Y')}."
+    end
+
+    # Check the provisional submission date.
+    # This is the date, when the bank files are supposed to be sent for processing
+    #
+    # TODO add the business days here as config value
+    submission_date = 6.business_days.before(expected_due_date)
+
+    if bank_holidays.include?(submission_date.to_s)
+
+      message = "The selected payment date cannot be fulfilled because the required bank submission date falls on a bank holiday. We will automatically adjust this to the next available banking day, #{expected_due_date.strftime('%d/%m/%Y')}."
+    end
+
+    # Adjust national holidays
+    if national_holidays.include?(expected_due_date.to_s)
+      while national_holidays.include?(expected_due_date.to_s) do
+        expected_due_date = 1.business_days.after(expected_due_date)
+      end
+
+      message = "The selected payment date falls on a bank holiday. We will automatically adjust this to the next available banking day, #{expected_due_date.strftime('%d/%m/%Y')}."
+    end
+
+    return expected_due_date
   end
 
+  # TODO add case where due date calculated based on payment terms
 
   #
   # == Check if date is a day when SEPA payments can be processed
   #
-  # Check if it is a weekday and it is not on the ECB and local holiday list
+  # Check if it is a weekday and it is not on the ECB and national holiday list
   #
   # === Attributes
   #
