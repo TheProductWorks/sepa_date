@@ -8,6 +8,11 @@ module SepaDate
     end
 
     #
+    # Date format in messages
+    #
+    @@date_format = "%d/%m/%Y"
+
+    #
     # Location of the business time configuration file
     #
     @@business_time_configuration_file = "config/business_time.yml"
@@ -75,6 +80,14 @@ module SepaDate
 
     def country_code=(country_code)
       @@country_code = country_code
+    end
+
+    def date_format
+      @@date_format
+    end
+
+    def date_format=(date_format)
+      @@date_format = date_format
     end
   end
 end

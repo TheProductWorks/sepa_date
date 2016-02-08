@@ -68,4 +68,23 @@ class SepaDateTest < MiniTest::Unit::TestCase
 
     assert_equal expected_holidays, holidays
   end
+
+  #
+  # ecb_holidays_for_year/1
+  #
+  def test_ecb_holidays_for_year_empty_set
+    assert_equal [], SepaDate.ecb_holidays_for_year(2001)
+  end
+
+  #
+  # national_holidays_for_year/1
+  #
+  def test_national_holidays_for_year_empty_set
+    assert_equal [], SepaDate.national_holidays_for_year(2001)
+  end
+
+  def test_national_holidays_for_year_with_locale
+    expected_holidays = ["2015-01-01", "2015-03-17", "2015-04-03", "2015-04-06", "2015-05-04", "2015-05-01", "2015-08-03", "2015-10-26", "2015-12-25", "2015-12-28", "2015-12-29"]
+    assert_equal expected_holidays, SepaDate.national_holidays_for_year(2015, "ie")
+  end
 end

@@ -38,14 +38,31 @@ module SepaDate
   # +year+
   #
   def self.holidays_for_year year
-    bank_holidays = SepaDate.holidays_configuration
+    return SepaDate.ecb_holidays_for_year(year) + SepaDate.national_holidays_for_year(year)
+  end
 
-    holidays = bank_holidays[SepaDate.ecb_code][year]
-    if SepaDate.country_code
-      holidays += bank_holidays[SepaDate.country_code][year]
-    end
+  #
+  # == National holidays for year and country
+  #
+  # === Attributes
+  #
+  # +year+
+  # +country_code+
+  #
+  def self.national_holidays_for_year year, country_code = nil
+    country_code ||= SepaDate.country_code
+    return SepaDate.holidays_configuration[country_code][year] || []
+  end
 
-    return holidays
+  #
+  # == ECB holidays for year
+  #
+  # === Attributes
+  #
+  # +year+
+  #
+  def self.ecb_holidays_for_year year
+    return SepaDate.holidays_configuration[SepaDate.ecb_code][year] || []
   end
 
   #
