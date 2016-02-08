@@ -1,3 +1,6 @@
+require 'holiday'
+require 'business_time'
+
 module SepaDate
   module Configure
     #

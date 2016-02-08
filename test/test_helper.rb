@@ -1,0 +1,5 @@
+require 'sepa_date'
+require 'minitest'
+require 'minitest/unit'
+require 'minitest/autorun'
+require 'minitest/pride'
