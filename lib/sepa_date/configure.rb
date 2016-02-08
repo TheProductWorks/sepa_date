@@ -3,6 +3,10 @@ require 'business_time'
 
 module SepaDate
   module Configure
+    def configuration
+      yield self
+    end
+
     #
     # Location of the business time configuration file
     #

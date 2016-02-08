@@ -4,7 +4,7 @@ module SepaDate
   extend Configure
 
   #
-  # == Correction on bank holidays
+  # == adjustion on bank holidays
   #
   # If a date falls on a bank holiday, let it be an ECB day, or a national holiday,
   # we automatically adjust it to the next available working day
@@ -14,11 +14,14 @@ module SepaDate
   # +date+ - Date we want to check
   # +end_of_month+ - Boolean on whether we need to adjust the date to the end of the month
   #
-  def self.correct_bank_holiday(date, end_of_month=false)
+  def self.adjust_bank_holiday(date, end_of_month=false)
     bank_holidays = SepaDate.holidays_configuration
 
     holidays = bank_holidays[SepaDate.ecb_code][date.year]
-    date_string = date.to_s
+    if SepaDate.country_code
+      holidays += bank_holidays[SepaDate.country_code][date.year]
+    end
+    date_string = date.strftime('%Y-%m-%d')
 
     if holidays.include?(date_string)
       if end_of_month
@@ -38,7 +41,7 @@ module SepaDate
   end
 
   #
-  # == Correction on weekend days
+  # == adjustion on weekend days
   #
   # If a date falls on a weekend,
   # we automatically adjust it to the next available working day
@@ -48,7 +51,7 @@ module SepaDate
   # +date+ - Date we want to check
   # +end_of_month+ - Boolean on whether we need to adjust the date to the end of the month
   #
-  def self.correct_weekend(date, end_of_month=false)
+  def self.adjust_weekend(date, end_of_month=false)
     if !date.weekday?
       if end_of_month
         date = 0.business_day.before(date)
