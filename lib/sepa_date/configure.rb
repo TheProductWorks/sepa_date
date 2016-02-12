@@ -8,6 +8,11 @@ module SepaDate
     end
 
     #
+    # Submission days buffer - days it takes to process a payment from a bank's point of view once they received a payment file
+    #
+    @@submission_days = 6
+
+    #
     # Date format in messages
     #
     @@date_format = "%d/%m/%Y"
@@ -88,6 +93,14 @@ module SepaDate
 
     def date_format=(date_format)
       @@date_format = date_format
+    end
+
+    def submission_days
+      @@submission_days
+    end
+
+    def submission_days=(submission_days)
+      @@submission_days = submission_days
     end
   end
 end
