@@ -87,4 +87,80 @@ class SepaDateTest < MiniTest::Unit::TestCase
     expected_holidays = ["2015-01-01", "2015-03-17", "2015-04-03", "2015-04-06", "2015-05-04", "2015-05-01", "2015-08-03", "2015-10-26", "2015-12-25", "2015-12-28", "2015-12-29"]
     assert_equal expected_holidays, SepaDate.national_holidays_for_year(2015, "ie")
   end
+
+  #
+  # verify_due_date/1
+  #
+  def test_verify_due_date__date_unchanged
+    assert_equal @monday, SepaDate.verify_due_date(expected_due_date: @monday)
+  end
+
+  def test_verify_due_date__date_unchanged_verbose
+    result = {due_date: @monday, message: "The selected payment date falls on an ECB date."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @monday, verbose: true)
+  end
+
+  def test_verify_due_date__date_end_of_month
+    monday = DateTime.new(2015, 3, 2)
+    result = DateTime.new(2015, 3, 31)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: monday, end_of_month: true)
+  end
+
+  def test_verify_due_date__date_end_of_month_verbose
+    monday = DateTime.new(2015, 3, 2)
+    result = {due_date: DateTime.new(2015, 3, 31), message: "The selected payment date adjusted to the end of the month, falls on an ECB date."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: monday, end_of_month: true, verbose: true)
+  end
+
+  def test_verify_due_date__date_not_weekday
+    result = DateTime.new(2015, 2, 2)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @sunday)
+  end
+
+  def test_verify_due_date__date_not_weekday_verbose
+    result = {due_date: DateTime.new(2015, 2, 2), message: "The selected payment date falls on a weekend. We will automatically adjust this to the next available banking day, 02/02/2015."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @sunday, verbose: true)
+  end
+
+  def test_verify_due_date__date_end_of_month_not_weekday
+    result = DateTime.new(2015, 2, 27)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @monday, end_of_month: true)
+  end
+
+  def test_verify_due_date__date_end_of_month_not_weekday_verbose
+    result = {due_date: DateTime.new(2015, 2, 27), message: "The selected payment date falls on a weekend. We will automatically adjust this to the next available banking day, 27/02/2015."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @monday, end_of_month: true, verbose: true)
+  end
+
+  def test_verify_due_date__date_ecb_holiday
+    result = DateTime.new(2015, 4, 7)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @ecb_day)
+  end
+
+  def test_verify_due_date__date_ecb_holiday_verbose
+    result = {due_date: DateTime.new(2015, 4, 7), message: "The selected payment date falls on a bank holiday. We will automatically adjust this to the next available banking day, 07/04/2015."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @ecb_day, verbose: true)
+  end
+
+  def test_verify_due_date__date_national_holiday
+    result = DateTime.new(2015, 3, 18)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @paddys_day)
+  end
+
+  def test_verify_due_date__date_national_holiday_verbose
+    result = {due_date: DateTime.new(2015, 3, 18), message: "The selected payment date falls on a bank holiday. We will automatically adjust this to the next available banking day, 18/03/2015."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: @paddys_day, verbose: true)
+  end
+
+  def test_verify_due_date__date_s_submission_date_is_ecb_holiday
+    day = SepaDate.submission_days.business_days.after(@ecb_day)
+    result = DateTime.new(2015, 4, 13)
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: day)
+  end
+
+  def test_verify_due_date__date_s_submission_date_is_ecb_holiday
+    day = SepaDate.submission_days.business_days.after(@ecb_day)
+    result = {due_date: DateTime.new(2015, 4, 13), message: "The selected payment date cannot be fulfilled because the required bank submission date falls on a bank holiday. We will automatically adjust this to the next available banking day, 13/04/2015."}
+    assert_equal result, SepaDate.verify_due_date(expected_due_date: day, verbose: true)
+  end
 end
