@@ -1,7 +1,7 @@
 SEPA Date Gem
 =============
 
-Determine based on holidays whether a date is an official [SEPA](https://www.ecb.europa.eu/paym/retpaym/paymint/html/index.en.html) payment date recognised by the European Central Bank (ECB). The gem populates the base dates for year 2015, 2016, 2017 and 2018 and will grab the later years' dates from  ECB's site (feature yet to be completed).
+Determine based on holidays whether a date is an official [SEPA](https://www.ecb.europa.eu/paym/retpaym/paymint/html/index.en.html) payment date recognised by the European Central Bank (ECB). The gem populates the base [holidays](http://www.ecb.europa.eu/home/contacts/html/index.en.html#t5) for year 2015, 2016, 2017 and 2018 and will grab the later years' dates from  ECB's site (feature yet to be completed).
 
 The SEPA Date gem can be configured to check for national holidays as well, which may differ from the official ECB holidays. To set these up, please consult
 
