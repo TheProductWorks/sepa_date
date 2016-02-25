@@ -1,3 +1,8 @@
+# Business time configuration.
+# Defaults to 9-5 work week.
+#
+# For all configuration options please visit https://rubygems.org/gems/business_time
+#
 business_time:
   beginning_of_workday: 9:00 am
   end_of_workday: 5:00 pm

@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+BUSINESS_TIME_YML = "business_time.yml"
+HOLIDAYS_YML = "holidays.yml"
+CONFIG_TARGET_DIR = File.join(Dir.pwd, "config")
+CONFIG_TEMPLATE_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "..", "config")
+
+# Create config dir if not present
+FileUtils.mkdir_p CONFIG_TARGET_DIR
+
+puts "Copying over holiday and business time configuration file templates..."
+
+FileUtils.copy File.join(CONFIG_TEMPLATE_DIR, BUSINESS_TIME_YML), File.join(CONFIG_TARGET_DIR, BUSINESS_TIME_YML)
+FileUtils.copy File.join(CONFIG_TEMPLATE_DIR, HOLIDAYS_YML), File.join(CONFIG_TARGET_DIR, HOLIDAYS_YML)
+
+# Copy over config template - TODO
