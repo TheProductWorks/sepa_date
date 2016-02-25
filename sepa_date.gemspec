@@ -10,7 +10,9 @@ Gem::Specification.new do |s|
   s.description = "Date helper to determine SEPA payment dates."
   s.authors     = ["Máté Marjai"]
   s.email       = 'mate.marjai@gmail.com'
-  s.files       = ["lib/sepa_date.rb"]
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- test/*`.split("\n")
+  s.require_paths = ["lib"]
   s.homepage    =
     'http://rubygems.org/gems/sepa_date'
   s.license       = 'MIT'
