@@ -4,6 +4,7 @@ require 'fileutils'
 
 BUSINESS_TIME_YML = "business_time.yml"
 HOLIDAYS_YML = "holidays.yml"
+SEPA_DATE_RB = "sepa_date.rb"
 CONFIG_TARGET_DIR = File.join(Dir.pwd, "config")
 CONFIG_TEMPLATE_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "..", "config")
 
@@ -15,4 +16,6 @@ puts "Copying over holiday and business time configuration file templates..."
 FileUtils.copy File.join(CONFIG_TEMPLATE_DIR, BUSINESS_TIME_YML), File.join(CONFIG_TARGET_DIR, BUSINESS_TIME_YML)
 FileUtils.copy File.join(CONFIG_TEMPLATE_DIR, HOLIDAYS_YML), File.join(CONFIG_TARGET_DIR, HOLIDAYS_YML)
 
-# Copy over config template - TODO
+# Copy over config template
+FileUtils.mkdir_p File.join(CONFIG_TARGET_DIR, "initializers")
+FileUtils.copy File.join(CONFIG_TEMPLATE_DIR, SEPA_DATE_RB), File.join(CONFIG_TARGET_DIR, "initializers", SEPA_DATE_RB)
