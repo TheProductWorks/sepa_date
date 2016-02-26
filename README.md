@@ -29,6 +29,12 @@ Add this to your Gemfile and run the `bundle` command.
 gem "sepa_date"
 ```
 
+Then setup the configuration files with:
+
+```bash
+$ sepa_date_configure
+```
+
 ## Usage
 
 To test if your expected payment date is in fact a valid ECB day, and not a national holiday as well as it can be processed within a reasonable timeframe from the banks' point of view:
